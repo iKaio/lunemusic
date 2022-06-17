@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    font-synthesis: none;
+    -webkit-font-smoothing: antialiased;
+}
+
+hr {
+    margin: .5rem 0;
+    width: 0;
+}
