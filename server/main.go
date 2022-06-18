@@ -17,6 +17,7 @@ func main() {
 	r := gin.Default()
 
 	r.GET("/api/getfeed", APIGetFeed)
+	r.GET("/api/getapp", APIGetApp)
 
 	r.Run()
 }

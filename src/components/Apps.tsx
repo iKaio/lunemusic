@@ -10,12 +10,12 @@ export type IApp = {
 import android_icon from "../../assets/android.svg";
 import windows_icon from "../../assets/windows.svg";
 
-export const App: React.FC<{ data: IApp }> = ({ data }) => {
+export const App: React.FC<{ data: IApp, index: number }> = ({ data, index }) => {
   return (
     <div className="w-60 h-36 mr-2 mb-2 relative rounded-md overflow-hidden">
       <a
         className="h-full w-full absolute z-10 cursor-pointer"
-        href={data.download_url}
+        href={"/app/" + (index+1)}
       />
       <img className="h-full absolute object-cover" src={data.background} />
       <div className="w-full absolute h-16 bottom-0 bg-gradient-to-b from-transparent to-black flex p-2">
@@ -38,8 +38,8 @@ export const App: React.FC<{ data: IApp }> = ({ data }) => {
 export const Apps: React.FC<{ list: IApp[] }> = ({ list }) => {
   return (
     <div className="flex flex-wrap">
-      {list.map((app) => (
-        <App data={app} />
+      {list.map((app, i) => (
+        <App key={i} index={i} data={app} />
       ))}
     </div>
   );
