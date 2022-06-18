@@ -4,13 +4,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type File struct {
+	Name string `json:"name"`
+	Version string `json:"version"`
+	Url string `json:"url"`
+}
+
 type IApp struct {
 	Name string `json:"name"`
 	Description string `json:"description"`
 	Icon string `json:"icon"`
 	Background string `json:"background"`
 	TargetPlatform int `json:"target_platform"` // 0: android, 1: windows
-	DownloadURL string `json:"download_url"`
+	Files []File `json:"files"`
 }
 
 func main() {

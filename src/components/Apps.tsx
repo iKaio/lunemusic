@@ -1,10 +1,16 @@
+type File = {
+  name: string;
+  version: string;
+  url: string;
+};
+
 export type IApp = {
   name: string;
   description: string;
   icon: string;
   background: string;
   target_platform: number; // 0: android, 1: windows
-  download_url: string;
+  files: File[];
 };
 
 import android_icon from "../../assets/android.svg";
