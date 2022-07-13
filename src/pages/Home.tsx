@@ -1,46 +1,54 @@
 type INoteProps = {
   name?: string;
   black?: boolean;
-  spacing: string;
+  spacing?: "7" | "10" | "14" | "21";
+  highlight?: boolean;
 };
 
 function Note(props: INoteProps) {
   return (
     <div
-      className={`flex flex-col-reverse items-center h-full w-${props.black ? "7" : "14"}p ml-${
-        props.spacing || "7"
-      }p bg-${props.black ? "black" : "white"} ${
-        props.black ? "" : "shadow-md"
-      }`}
+      className={`flex flex-col-reverse items-center h-full
+      ${props.black ? "black-key" : "white-key"}
+      ${"key-spacing-" + props.spacing}
+      `}
     >
-      <h1 className={`mb-4 text-sm text-white font-bold ${!props.black && "text-black"}`}>{props.name}</h1>
+      <h1
+        className={`key-name ${props.highlight ? (props.black ? "black-key-name-highlight" : "white-key-name-highlight") : ""}`}
+      >
+        {props.name}
+      </h1>
     </div>
   );
 }
 
-function Piano() {
+type IPianoProps = {
+  VisualModifier: (key_index: number) => boolean;
+};
+
+function Piano(props: IPianoProps) {
   return (
-    <div className="relative w-1/2 h-60">
+    <div className="relative w-half h-50">
       {/* Black keys */}
 
-      <div className="w-full h-1/2 flex absolute z-10">
-        <Note name="C# D♭" black spacing="10" />
-        <Note name="D# E♭" black spacing="7" />
-        <Note name="F# G♭" black spacing="21" />
-        <Note name="G# A♭" black spacing="7" />
-        <Note name="A# B♭" black spacing="7" />
+      <div className="w-full h-half flex absolute z-10">
+        <Note name="C# D♭" black spacing="10" highlight={props.VisualModifier(2)} />
+        <Note name="D# E♭" black spacing="7" highlight={props.VisualModifier(4)} />
+        <Note name="F# G♭" black spacing="21" highlight={props.VisualModifier(7)} />
+        <Note name="G# A♭" black spacing="7" highlight={props.VisualModifier(9)} />
+        <Note name="A# B♭" black spacing="7" highlight={props.VisualModifier(11)} />
       </div>
 
       {/* White keys */}
 
-      <div className="h-full flex">
-        <Note name="C" spacing="14" />
-        <Note name="D" spacing="14" />
-        <Note name="E" spacing="14" />
-        <Note name="F" spacing="14" />
-        <Note name="G" spacing="14" />
-        <Note name="A" spacing="14" />
-        <Note name="B" spacing="14" />
+      <div className="h-full flex relative">
+        <Note name="C" highlight={props.VisualModifier(1)} />
+        <Note name="D" highlight={props.VisualModifier(3)} />
+        <Note name="E" highlight={props.VisualModifier(5)}/>
+        <Note name="F" highlight={props.VisualModifier(6)} />
+        <Note name="G" highlight={props.VisualModifier(8)} />
+        <Note name="A" highlight={props.VisualModifier(10)} />
+        <Note name="B" highlight={props.VisualModifier(12)} />
       </div>
     </div>
   );
@@ -49,7 +57,7 @@ function Piano() {
 function Home() {
   return (
     <div>
-      <Piano />
+      <Piano VisualModifier={(i)=>true} />
     </div>
   );
 }
