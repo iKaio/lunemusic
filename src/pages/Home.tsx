@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 type INoteProps = {
   name?: string;
   black?: boolean;
@@ -54,10 +56,64 @@ function Piano(props: IPianoProps) {
   );
 }
 
+const Formulas = {
+  major: [0,2,2,1,2,2,2,1],
+  minor: [0,2,1,2,2,1,2,2]
+}
+
+function GetScaleModifierFor(root_key_index: number = 1, scale_type: "major" | "minor" = "major") {
+
+  let ScaleFormula = Formulas[scale_type];
+  
+  return (comparision_key_index: number) => {
+    let current = root_key_index;
+
+    for (let i = 0; i < ScaleFormula.length; i++) {
+      const step_type = ScaleFormula[i];
+      current += step_type;
+
+      if (current > 12) {
+        current -= 12;
+      }
+
+      if (current == comparision_key_index) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+}
+
 function Home() {
+  let [currentKey, setCurrentKey] = useState(1);
+  let [currentScaleType, setCurrentScaleType] = useState("major");
+
   return (
     <div>
-      <Piano VisualModifier={(i)=>true} />
+      <div className="w-full my-1">
+        <select onInput={(e=>setCurrentKey(parseInt(e.target.value)))}>
+          <option value="1">C</option>
+          <option value="2">C# D♭</option>
+          <option value="3">D</option>
+          <option value="4">D# E♭</option>
+          <option value="5">E</option>
+          <option value="6">F</option>
+          <option value="7">F# G♭</option>
+          <option value="8">G</option>
+          <option value="9">G# A♭</option>
+          <option value="10">A</option>
+          <option value="11">A# B♭</option>
+          <option value="12">B</option>
+        </select>
+
+        <select onInput={(e=>setCurrentScaleType(e.target.value))}>
+          <option value="major">Major</option>
+          <option value="minor">Minor</option>
+        </select>
+      </div>
+
+      <Piano VisualModifier={GetScaleModifierFor(currentKey, currentScaleType)} />
     </div>
   );
 }
