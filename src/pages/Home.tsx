@@ -1,4 +1,4 @@
-import { DefaultPianoNotes, Keyboard } from "../components/Keyboard";
+import { Keyboard } from "../components/Keyboard";
 import { Modifier } from "../Modifiers/Basic";
 
 function Home() {
@@ -7,7 +7,7 @@ function Home() {
   return (
     <div>
       <h1>Your keyboard</h1>
-      <Keyboard Notes={DefaultPianoNotes} Modifier={Mod} />
+      <Keyboard Modifier={Mod} />
     </div>
   );
 }

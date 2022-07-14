@@ -1,33 +1,34 @@
 import { useEffect, useState } from "react";
 import { IModifier } from "../Modifiers/Basic";
 
-function PlayNote(note_id: string) {
-  new Audio("/notes/" + note_id + "3.mp3").play();
-}
+export type IKeyboardNoteProps = {
+  Note: IKeyboardNote;
+  Modifier: IModifier;
+};
 
-function Note(props: IKeyboardNote) {
-  let isBlack = props.type == "black";
+function Note(props: IKeyboardNoteProps) {
+  let isBlack = props.Note.type == "black";
 
   return (
     <div
-      onClick={() => PlayNote(props.preview || props.name || "C")}
+      onClick={() => props.Modifier.PlayNote(props.Note.preview || props.Note.name || "C")}
       className={`flex flex-col-reverse items-center h-full
 
         ${isBlack ? "black-key" : "white-key"}
-        ${"key-spacing-" + props.spacing}
-        ${props.pressing ? "pressing-key" : ""}
+        ${"key-spacing-" + props.Note.spacing}
+        ${props.Note.pressing ? "pressing-key" : ""}
         `}
     >
       <h1
         className={`key-name ${
-          props.available
+          props.Note.available
             ? isBlack
               ? "black-key-name-highlight"
               : "white-key-name-highlight"
             : ""
         }`}
       >
-        {props.name}
+        {props.Note.name}
       </h1>
     </div>
   );
@@ -45,118 +46,17 @@ export type IKeyboardNote = {
 };
 
 type IKeyboardProps = {
-  Notes: IKeyboardNote[];
   Modifier: IModifier;
 };
-
-export const DefaultPianoNotes: IKeyboardNote[] = [
-  {
-    name: "C",
-    type: "white",
-    preview: "C",
-    spacing: "0",
-    key: "KeyZ",
-    index: 1,
-  },
-  {
-    name: "C# D♭",
-    type: "black",
-    preview: "Db",
-    spacing: "10",
-    key: "KeyS",
-    index: 2,
-  },
-  {
-    name: "D",
-    type: "white",
-    preview: "D",
-    spacing: "0",
-    key: "KeyX",
-    index: 3,
-  },
-  {
-    name: "D# E♭",
-    type: "black",
-    preview: "Eb",
-    spacing: "7",
-    key: "KeyD",
-    index: 4,
-  },
-  {
-    name: "E",
-    type: "white",
-    preview: "E",
-    spacing: "0",
-    key: "KeyC",
-    index: 5,
-  },
-  {
-    name: "F",
-    type: "white",
-    preview: "F",
-    spacing: "0",
-    key: "KeyV",
-    index: 6,
-  },
-  {
-    name: "F# G♭",
-    type: "black",
-    preview: "Gb",
-    spacing: "21",
-    key: "KeyG",
-    index: 7,
-  },
-  {
-    name: "G",
-    type: "white",
-    preview: "G",
-    spacing: "0",
-    key: "KeyB",
-    index: 8,
-  },
-  {
-    name: "G# A♭",
-    type: "black",
-    preview: "Ab",
-    spacing: "7",
-    key: "KeyH",
-    index: 9,
-  },
-  {
-    name: "A",
-    type: "white",
-    preview: "A",
-    spacing: "0",
-    key: "KeyN",
-    index: 10,
-  },
-  {
-    name: "A# B♭",
-    type: "black",
-    preview: "Bb",
-    spacing: "7",
-    key: "KeyJ",
-    index: 11,
-  },
-  {
-    name: "B",
-    type: "white",
-    preview: "B",
-    spacing: "0",
-    key: "KeyM",
-    index: 12,
-  },
-];
 
 export function Keyboard(props: IKeyboardProps) {
   let [_, update] = useState(Date.now());
   props.Modifier.update = update;
-  let [keyStates, setKeyStates] = useState(props.Notes);
 
   let BlackKeys: IKeyboardNote[] = [];
   let WhiteKeys: IKeyboardNote[] = [];
 
-  keyStates.forEach((note, i) => {
+  props.Modifier.keys_states.forEach((note, i) => {
     note.index = i + 1;
     note.available = props.Modifier.isKeyAvailable(i + 1);
 
@@ -169,27 +69,12 @@ export function Keyboard(props: IKeyboardProps) {
 
   useEffect(() => {
     document.onkeyup = (e) => {
-      let KeysStates = [...keyStates];
-      let Note = KeysStates.find((k) => k.key == e.code);
-
-      if (Note) {
-        Note.pressing = false;
-        setKeyStates(KeysStates);
-      }
+      props.Modifier.onKeyUp(e.code);
     };
 
     document.onkeydown = (e) => {
       if (!e.repeat) {
-        let KeysStates = [...keyStates];
-        let Note = KeysStates.find((k) => k.key == e.code);
-
-        if (Note) {
-          PlayNote(Note.preview);
-          Note.pressing = true;
-          setKeyStates(KeysStates);
-        }
-
-        props.Modifier.onKeyDown(KeysStates);
+        props.Modifier.onKeyDown(e.code);
       }
     };
   }, []);
@@ -227,7 +112,7 @@ export function Keyboard(props: IKeyboardProps) {
           <option value="2">Minor</option>
         </select>
 
-        <h1 className="panel-indicator">{}</h1>
+        {props.Modifier.panel_indicators.map(indi=><h1 className="panel-indicator">{indi}</h1>)}
       </div>
 
       <div className="relative w-full h-50">
@@ -235,7 +120,7 @@ export function Keyboard(props: IKeyboardProps) {
 
         <div className="w-full h-half flex absolute z-10">
           {BlackKeys.map((e) => (
-            <Note {...e} />
+            <Note Modifier={props.Modifier} Note={e} />
           ))}
         </div>
 
@@ -243,7 +128,7 @@ export function Keyboard(props: IKeyboardProps) {
 
         <div className="h-full flex relative">
           {WhiteKeys.map((e) => (
-            <Note {...e} />
+            <Note Modifier={props.Modifier} Note={e} />
           ))}
         </div>
       </div>

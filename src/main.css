@@ -61,25 +61,23 @@ hr {
 }
 
 .main-piano {
-    background: rgb(14, 131, 88);
     width: 50%;
 }
 
 .main-piano-panel {
     width: 100%;
-    background: rgb(30,30,30);
-    padding: .1rem;
+    background: rgb(40,40,40);
     display: flex;
     align-items: center;
+    padding: .2rem;
 }
 
 select {
-    padding: .5rem;
-    background: rgb(20,20,20);
+    background: black;
     color: white;
     border: none;
-    margin-right: .2rem;
-    height: 50%;
+    margin-right: .3rem;
+    height: 5vh;
 }
 
 .pressing-key {
@@ -87,10 +85,8 @@ select {
 }
 
 .panel-indicator {
-    background: rgb(20,20,20);
-    height: 50%;
-    padding: .5rem;
     color: rgb(129, 255, 211);
     width: fit-content;
     font-size: 1rem;
+    margin: 0;
 }
