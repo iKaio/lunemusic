@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { IModifier } from "../Modifiers/Basic";
 
 function PlayNote(note_id: string) {
   new Audio("/notes/" + note_id + "3.mp3").play();
@@ -45,17 +46,11 @@ type IPianoNote = {
 
 type IPianoProps = {
   Notes: IPianoNote[];
-  Modifier: (key_index: number) => boolean;
+  Modifier: IModifier;
 };
 
 export const DefaultPianoNotes: IPianoNote[] = [
-  {
-    name: "C",
-    type: "white",
-    preview: "C",
-    spacing: "0",
-    key: "KeyZ",
-  },
+  { name: "C", type: "white", preview: "C", spacing: "0", key: "KeyZ" },
   { name: "C# D♭", type: "black", preview: "Db", spacing: "10", key: "KeyS" },
   { name: "D", type: "white", preview: "D", spacing: "0", key: "KeyX" },
   { name: "D# E♭", type: "black", preview: "Eb", spacing: "7", key: "KeyD" },
@@ -70,6 +65,8 @@ export const DefaultPianoNotes: IPianoNote[] = [
 ];
 
 export function Piano(props: IPianoProps) {
+  let [_, update] = useState(Date.now());
+  props.Modifier.update = update;
   let [keyStates, setKeyStates] = useState(props.Notes);
 
   let BlackKeys: IPianoNote[] = [];
@@ -77,7 +74,7 @@ export function Piano(props: IPianoProps) {
 
   keyStates.forEach((note, i) => {
     note.index = i + 1;
-    note.available = props.Modifier(i + 1);
+    note.available = props.Modifier.isKeyAvailable(i + 1);
 
     if (note.type == "black") {
       BlackKeys.push(note);
@@ -107,6 +104,8 @@ export function Piano(props: IPianoProps) {
           Note.pressing = true;
           setKeyStates(KeysStates);
         }
+
+        props.Modifier.onKeyDown();
       }
     };
   }, []);
@@ -130,37 +129,4 @@ export function Piano(props: IPianoProps) {
       </div>
     </div>
   );
-}
-
-const Formulas = {
-  major: [0, 2, 2, 1, 2, 2, 2, 1],
-  minor: [0, 2, 1, 2, 2, 1, 2, 2],
-};
-
-export type AvailableScales = "major" | ("minor" & string);
-
-export function GetScaleModifierFor(
-  root_key_index: number = 1,
-  scale_type: AvailableScales = "major"
-) {
-  let ScaleFormula = Formulas[scale_type];
-
-  return (comparision_key_index: number) => {
-    let current = root_key_index;
-
-    for (let i = 0; i < ScaleFormula.length; i++) {
-      const step_type = ScaleFormula[i];
-      current += step_type;
-
-      if (current > 12) {
-        current -= 12;
-      }
-
-      if (current == comparision_key_index) {
-        return true;
-      }
-    }
-
-    return false;
-  };
 }

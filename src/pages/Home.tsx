@@ -1,16 +1,19 @@
 import { useState } from "react";
-import { AvailableScales, DefaultPianoNotes, GetScaleModifierFor, Piano } from "../components/Piano";
+import { DefaultPianoNotes, Piano } from "../components/Piano";
+import { AvailableScales, IModifierConfig, Modifier } from "../Modifiers/Basic";
 
 function MainPiano() {
-  let [currentKey, setCurrentKey] = useState(1);
-  let [currentScaleType, setCurrentScaleType] = useState<AvailableScales>("major");
+  let Mod = new Modifier();
 
   return (
     <div className="main-piano">
       <div className="w-full main-piano-panel">
-        <select onInput={e => {
-          setCurrentKey(parseInt(e.currentTarget.value));
-        }}>
+        <select
+          onInput={(e) => {
+            Mod.config.key = parseInt(e.currentTarget.value);
+            Mod.update(Date.now());
+          }}
+        >
           <option value="1">C</option>
           <option value="2">C# D♭</option>
           <option value="3">D</option>
@@ -25,18 +28,18 @@ function MainPiano() {
           <option value="12">B</option>
         </select>
 
-        <select onInput={e => {
-          setCurrentScaleType(e.currentTarget.value == "1" ? "major" : "minor");
-        }}>
+        <select
+          onInput={(e) => {
+            Mod.config.scale = e.currentTarget.value == "1" ? "major" : "minor";
+            Mod.update(Date.now());
+          }}
+        >
           <option value="1">Major</option>
           <option value="2">Minor</option>
         </select>
       </div>
 
-      <Piano
-        Notes={DefaultPianoNotes}
-        Modifier={GetScaleModifierFor(currentKey, currentScaleType)}
-      />
+      <Piano Notes={DefaultPianoNotes} Modifier={Mod} />
     </div>
   );
 }
