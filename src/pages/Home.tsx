@@ -37,6 +37,8 @@ function MainPiano() {
           <option value="1">Major</option>
           <option value="2">Minor</option>
         </select>
+
+        <h1 className="panel-indicator">Ebmaj7</h1>
       </div>
 
       <Piano Notes={DefaultPianoNotes} Modifier={Mod} />

@@ -68,7 +68,9 @@ hr {
 .main-piano-panel {
     width: 100%;
     background: rgb(30,30,30);
-    padding: 1rem;
+    padding: .1rem;
+    display: flex;
+    align-items: center;
 }
 
 select {
@@ -77,8 +79,18 @@ select {
     color: white;
     border: none;
     margin-right: .2rem;
+    height: 50%;
 }
 
 .pressing-key {
     background: palegreen;
+}
+
+.panel-indicator {
+    background: rgb(20,20,20);
+    height: 50%;
+    padding: .5rem;
+    color: rgb(129, 255, 211);
+    width: fit-content;
+    font-size: 1rem;
 }
