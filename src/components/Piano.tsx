@@ -1,31 +1,26 @@
 import { useEffect, useState } from "react";
 
-type INoteProps = {
-  name?: string;
-  id?: string;
-  black?: boolean;
-  spacing?: "7" | "10" | "14" | "21";
-  highlight?: boolean;
-  pressed?: boolean;
-};
-
 function PlayNote(note_id: string) {
   new Audio("/notes/" + note_id + "3.mp3").play();
 }
 
-function Note(props: INoteProps) {
+function Note(props: IPianoNote) {
+  let isBlack = props.type == "black";
+
   return (
     <div
-      onClick={() => PlayNote(props.id || props.name || "C")}
+      onClick={() => PlayNote(props.preview || props.name || "C")}
       className={`flex flex-col-reverse items-center h-full
-        ${props.black ? "black-key" : "white-key"}
+
+        ${isBlack ? "black-key" : "white-key"}
         ${"key-spacing-" + props.spacing}
+        ${props.pressing ? "pressing-key" : ""}
         `}
     >
       <h1
         className={`key-name ${
-          props.highlight
-            ? props.black
+          props.available
+            ? isBlack
               ? "black-key-name-highlight"
               : "white-key-name-highlight"
             : ""
@@ -42,120 +37,96 @@ type IPianoNote = {
   type: "black" | "white";
   preview: string;
   spacing: "0" | "7" | "10" | "14" | "21";
+  key?: string;
+  index?: number;
+  available?: boolean;
+  pressing?: boolean;
 };
 
 type IPianoProps = {
   Notes: IPianoNote[];
-  VisualModifier: (key_index: number) => boolean;
+  Modifier: (key_index: number) => boolean;
 };
 
-const KeyBoardMap = new Map<string, string>();
-
-KeyBoardMap.set("KeyZ", "C");
-KeyBoardMap.set("KeyS", "Db");
-KeyBoardMap.set("KeyX", "D");
-KeyBoardMap.set("KeyD", "Eb");
-KeyBoardMap.set("KeyC", "E");
-KeyBoardMap.set("KeyV", "F");
-KeyBoardMap.set("KeyG", "Gb");
-KeyBoardMap.set("KeyB", "G");
-KeyBoardMap.set("KeyH", "Ab");
-KeyBoardMap.set("KeyN", "A");
-KeyBoardMap.set("KeyJ", "Bb");
-KeyBoardMap.set("KeyM", "B");
-
 export const DefaultPianoNotes: IPianoNote[] = [
-  {name: "C", type: "white", preview: "C", spacing: "0"},
-    {name: "C# D♭", type: "black", preview: "Db", spacing: "10"},
-  {name: "D", type: "white", preview: "D", spacing: "0"},
-    {name: "D# E♭", type: "black", preview: "Eb", spacing: "7"},
-  {name: "E", type: "white", preview: "E", spacing: "0"},
-  {name: "F", type: "white", preview: "F", spacing: "0"},
-    {name: "F# G♭", type: "black", preview: "Gb", spacing: "21"},
-  {name: "G", type: "white", preview: "G", spacing: "0"},
-    {name: "G# A♭", type: "black", preview: "Ab", spacing: "7"},
-  {name: "A", type: "white", preview: "A", spacing: "0"},
-    {name: "A# B♭", type: "black", preview: "Bb", spacing: "7"},
-  {name: "B", type: "white", preview: "B", spacing: "0"},
+  {
+    name: "C",
+    type: "white",
+    preview: "C",
+    spacing: "0",
+    key: "KeyZ",
+  },
+  { name: "C# D♭", type: "black", preview: "Db", spacing: "10", key: "KeyS" },
+  { name: "D", type: "white", preview: "D", spacing: "0", key: "KeyX" },
+  { name: "D# E♭", type: "black", preview: "Eb", spacing: "7", key: "KeyD" },
+  { name: "E", type: "white", preview: "E", spacing: "0", key: "KeyC" },
+  { name: "F", type: "white", preview: "F", spacing: "0", key: "KeyV" },
+  { name: "F# G♭", type: "black", preview: "Gb", spacing: "21", key: "KeyG" },
+  { name: "G", type: "white", preview: "G", spacing: "0", key: "KeyB" },
+  { name: "G# A♭", type: "black", preview: "Ab", spacing: "7", key: "KeyH" },
+  { name: "A", type: "white", preview: "A", spacing: "0", key: "KeyN" },
+  { name: "A# B♭", type: "black", preview: "Bb", spacing: "7", key: "KeyJ" },
+  { name: "B", type: "white", preview: "B", spacing: "0", key: "KeyM" },
 ];
 
 export function Piano(props: IPianoProps) {
-  let [keysPressing, setKeysPressing] = useState<string[]>([]);
+  let [keyStates, setKeyStates] = useState(props.Notes);
 
-  useEffect(()=>{
-    document.onkeyup = (e) => {
-      let thisKey = KeyBoardMap.get(e.code);
-      
-      if (thisKey) {
-        let ki = keysPressing.findIndex(e => e == thisKey);
-        setKeysPressing(p => {p.splice(ki, 1); return p});
-      }
+  let BlackKeys: IPianoNote[] = [];
+  let WhiteKeys: IPianoNote[] = [];
+
+  keyStates.forEach((note, i) => {
+    note.index = i + 1;
+    note.available = props.Modifier(i + 1);
+
+    if (note.type == "black") {
+      BlackKeys.push(note);
+    } else {
+      WhiteKeys.push(note);
     }
+  });
+
+  useEffect(() => {
+    document.onkeyup = (e) => {
+      let KeysStates = [...keyStates];
+      let Note = KeysStates.find((k) => k.key == e.code);
+
+      if (Note) {
+        Note.pressing = false;
+        setKeyStates(KeysStates);
+      }
+    };
 
     document.onkeydown = (e) => {
-      let thisKey = KeyBoardMap.get(e.code);
+      if (!e.repeat) {
+        let KeysStates = [...keyStates];
+        let Note = KeysStates.find((k) => k.key == e.code);
 
-      if (!e.repeat && thisKey) {
-        setKeysPressing(p => {thisKey && p.push(thisKey); return p});
-        PlayNote(thisKey);
+        if (Note) {
+          PlayNote(Note.preview);
+          Note.pressing = true;
+          setKeyStates(KeysStates);
+        }
       }
-    }
-
+    };
   }, []);
-  
 
   return (
     <div className="relative w-full h-50">
       {/* Black keys */}
 
       <div className="w-full h-half flex absolute z-10">
-        <Note
-          name="C# D♭"
-          id="Db"
-          black
-          spacing="10"
-          highlight={props.VisualModifier(2)}
-        />
-        <Note
-          name="D# E♭"
-          id="Eb"
-          black
-          spacing="7"
-          highlight={props.VisualModifier(4)}
-        />
-        <Note
-          name="F# G♭"
-          id="Gb"
-          black
-          spacing="21"
-          highlight={props.VisualModifier(7)}
-        />
-        <Note
-          name="G# A♭"
-          id="Ab"
-          black
-          spacing="7"
-          highlight={props.VisualModifier(9)}
-        />
-        <Note
-          name="A# B♭"
-          id="Bb"
-          black
-          spacing="7"
-          highlight={props.VisualModifier(11)}
-        />
+        {BlackKeys.map((e) => (
+          <Note {...e} />
+        ))}
       </div>
 
       {/* White keys */}
 
       <div className="h-full flex relative">
-        <Note name="C" highlight={props.VisualModifier(1)} />
-        <Note name="D" highlight={props.VisualModifier(3)} />
-        <Note name="E" highlight={props.VisualModifier(5)} />
-        <Note name="F" highlight={props.VisualModifier(6)} />
-        <Note name="G" highlight={props.VisualModifier(8)} />
-        <Note name="A" highlight={props.VisualModifier(10)} />
-        <Note name="B" highlight={props.VisualModifier(12)} />
+        {WhiteKeys.map((e) => (
+          <Note {...e} />
+        ))}
       </div>
     </div>
   );

@@ -78,3 +78,7 @@ select {
     border: none;
     margin-right: .2rem;
 }
+
+.pressing-key {
+    background: palegreen;
+}

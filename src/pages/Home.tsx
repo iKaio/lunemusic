@@ -35,7 +35,7 @@ function MainPiano() {
 
       <Piano
         Notes={DefaultPianoNotes}
-        VisualModifier={GetScaleModifierFor(currentKey, currentScaleType)}
+        Modifier={GetScaleModifierFor(currentKey, currentScaleType)}
       />
     </div>
   );
