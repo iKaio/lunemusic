@@ -1,4 +1,4 @@
-import { IPianoNote } from "../components/Piano";
+import { IKeyboardNote } from "../components/Keyboard";
 
 const Formulas = {
   major: [0, 2, 2, 1, 2, 2, 2, 1],
@@ -9,8 +9,9 @@ export type AvailableScales = "major" | ("minor" & string);
 
 export interface IModifier {
   isKeyAvailable: (key_index: number) => boolean;
-  onKeyDown: (keys_states: IPianoNote[]) => any;
+  onKeyDown: (keys_states: IKeyboardNote[]) => any;
   update?: React.Dispatch<React.SetStateAction<number>>;
+  config: IModifierConfig;
 }
 export type IModifierConfig = {
   key: number;
@@ -48,7 +49,7 @@ export class Modifier {
     return false;
   }
 
-  onKeyDown(keys_states: IPianoNote[]) {
+  onKeyDown(keys_states: IKeyboardNote[]) {
     let pressing_keys = keys_states.filter(e=>e.pressing);
     let intervals: number[] = [];
 
