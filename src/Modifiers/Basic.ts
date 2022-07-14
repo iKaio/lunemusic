@@ -1,3 +1,5 @@
+import { IPianoNote } from "../components/Piano";
+
 const Formulas = {
   major: [0, 2, 2, 1, 2, 2, 2, 1],
   minor: [0, 2, 1, 2, 2, 1, 2, 2],
@@ -7,13 +9,17 @@ export type AvailableScales = "major" | ("minor" & string);
 
 export interface IModifier {
   isKeyAvailable: (key_index: number) => boolean;
-  onKeyDown: () => any;
+  onKeyDown: (keys_states: IPianoNote[]) => any;
   update?: React.Dispatch<React.SetStateAction<number>>;
 }
 export type IModifierConfig = {
   key: number;
   scale: AvailableScales;
 };
+
+const IntervalsSequences: {[key: string]: string} = {
+    "3,2": "$", "2,3": "$m"
+}
 
 export class Modifier {
   constructor() {}
@@ -42,7 +48,24 @@ export class Modifier {
     return false;
   }
 
-  onKeyDown() {
+  onKeyDown(keys_states: IPianoNote[]) {
+    let pressing_keys = keys_states.filter(e=>e.pressing);
+    let intervals: number[] = [];
 
+    for (let i = 0; i < pressing_keys.length; i++) {
+        const tk = pressing_keys[i];
+        const nk = pressing_keys[i+1];
+
+        if (nk) {
+            intervals.push((nk.index - tk.index) - 1);
+        }
+    }
+
+    let intervals_sign = intervals.join(",");
+    let display_template = IntervalsSequences[intervals_sign];
+
+    if (display_template) {
+        console.log(display_template.replace("$", pressing_keys[0].name));
+    }
   }
 }

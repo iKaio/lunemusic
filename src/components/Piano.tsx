@@ -33,13 +33,13 @@ function Note(props: IPianoNote) {
   );
 }
 
-type IPianoNote = {
+export type IPianoNote = {
   name: string;
   type: "black" | "white";
   preview: string;
   spacing: "0" | "7" | "10" | "14" | "21";
   key?: string;
-  index?: number;
+  index: number;
   available?: boolean;
   pressing?: boolean;
 };
@@ -50,18 +50,18 @@ type IPianoProps = {
 };
 
 export const DefaultPianoNotes: IPianoNote[] = [
-  { name: "C", type: "white", preview: "C", spacing: "0", key: "KeyZ" },
-  { name: "C# D♭", type: "black", preview: "Db", spacing: "10", key: "KeyS" },
-  { name: "D", type: "white", preview: "D", spacing: "0", key: "KeyX" },
-  { name: "D# E♭", type: "black", preview: "Eb", spacing: "7", key: "KeyD" },
-  { name: "E", type: "white", preview: "E", spacing: "0", key: "KeyC" },
-  { name: "F", type: "white", preview: "F", spacing: "0", key: "KeyV" },
-  { name: "F# G♭", type: "black", preview: "Gb", spacing: "21", key: "KeyG" },
-  { name: "G", type: "white", preview: "G", spacing: "0", key: "KeyB" },
-  { name: "G# A♭", type: "black", preview: "Ab", spacing: "7", key: "KeyH" },
-  { name: "A", type: "white", preview: "A", spacing: "0", key: "KeyN" },
-  { name: "A# B♭", type: "black", preview: "Bb", spacing: "7", key: "KeyJ" },
-  { name: "B", type: "white", preview: "B", spacing: "0", key: "KeyM" },
+  { name: "C", type: "white", preview: "C", spacing: "0", key: "KeyZ", index: 1 },
+  { name: "C# D♭", type: "black", preview: "Db", spacing: "10", key: "KeyS", index: 2 },
+  { name: "D", type: "white", preview: "D", spacing: "0", key: "KeyX", index: 3 },
+  { name: "D# E♭", type: "black", preview: "Eb", spacing: "7", key: "KeyD", index: 4 },
+  { name: "E", type: "white", preview: "E", spacing: "0", key: "KeyC", index: 5 },
+  { name: "F", type: "white", preview: "F", spacing: "0", key: "KeyV", index: 6 },
+  { name: "F# G♭", type: "black", preview: "Gb", spacing: "21", key: "KeyG", index: 7 },
+  { name: "G", type: "white", preview: "G", spacing: "0", key: "KeyB", index: 8 },
+  { name: "G# A♭", type: "black", preview: "Ab", spacing: "7", key: "KeyH", index: 9 },
+  { name: "A", type: "white", preview: "A", spacing: "0", key: "KeyN", index: 10 },
+  { name: "A# B♭", type: "black", preview: "Bb", spacing: "7", key: "KeyJ", index: 11 },
+  { name: "B", type: "white", preview: "B", spacing: "0", key: "KeyM", index: 12 },
 ];
 
 export function Piano(props: IPianoProps) {
@@ -105,7 +105,7 @@ export function Piano(props: IPianoProps) {
           setKeyStates(KeysStates);
         }
 
-        props.Modifier.onKeyDown();
+        props.Modifier.onKeyDown(KeysStates);
       }
     };
   }, []);
