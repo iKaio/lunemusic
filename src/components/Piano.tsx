@@ -1,14 +1,22 @@
+import { useEffect, useState } from "react";
+
 type INoteProps = {
   name?: string;
   id?: string;
   black?: boolean;
   spacing?: "7" | "10" | "14" | "21";
   highlight?: boolean;
+  pressed?: boolean;
 };
+
+function PlayNote(note_id: string) {
+  new Audio("/notes/" + note_id + "3.mp3").play();
+}
 
 function Note(props: INoteProps) {
   return (
     <div
+      onClick={() => PlayNote(props.id || props.name || "C")}
       className={`flex flex-col-reverse items-center h-full
         ${props.black ? "black-key" : "white-key"}
         ${"key-spacing-" + props.spacing}
@@ -29,11 +37,73 @@ function Note(props: INoteProps) {
   );
 }
 
+type IPianoNote = {
+  name: string;
+  type: "black" | "white";
+  preview: string;
+  spacing: "0" | "7" | "10" | "14" | "21";
+};
+
 type IPianoProps = {
+  Notes: IPianoNote[];
   VisualModifier: (key_index: number) => boolean;
 };
 
+const KeyBoardMap = new Map<string, string>();
+
+KeyBoardMap.set("KeyZ", "C");
+KeyBoardMap.set("KeyS", "Db");
+KeyBoardMap.set("KeyX", "D");
+KeyBoardMap.set("KeyD", "Eb");
+KeyBoardMap.set("KeyC", "E");
+KeyBoardMap.set("KeyV", "F");
+KeyBoardMap.set("KeyG", "Gb");
+KeyBoardMap.set("KeyB", "G");
+KeyBoardMap.set("KeyH", "Ab");
+KeyBoardMap.set("KeyN", "A");
+KeyBoardMap.set("KeyJ", "Bb");
+KeyBoardMap.set("KeyM", "B");
+
+export const DefaultPianoNotes: IPianoNote[] = [
+  {name: "C", type: "white", preview: "C", spacing: "0"},
+    {name: "C# D♭", type: "black", preview: "Db", spacing: "10"},
+  {name: "D", type: "white", preview: "D", spacing: "0"},
+    {name: "D# E♭", type: "black", preview: "Eb", spacing: "7"},
+  {name: "E", type: "white", preview: "E", spacing: "0"},
+  {name: "F", type: "white", preview: "F", spacing: "0"},
+    {name: "F# G♭", type: "black", preview: "Gb", spacing: "21"},
+  {name: "G", type: "white", preview: "G", spacing: "0"},
+    {name: "G# A♭", type: "black", preview: "Ab", spacing: "7"},
+  {name: "A", type: "white", preview: "A", spacing: "0"},
+    {name: "A# B♭", type: "black", preview: "Bb", spacing: "7"},
+  {name: "B", type: "white", preview: "B", spacing: "0"},
+];
+
 export function Piano(props: IPianoProps) {
+  let [keysPressing, setKeysPressing] = useState<string[]>([]);
+
+  useEffect(()=>{
+    document.onkeyup = (e) => {
+      let thisKey = KeyBoardMap.get(e.code);
+      
+      if (thisKey) {
+        let ki = keysPressing.findIndex(e => e == thisKey);
+        setKeysPressing(p => {p.splice(ki, 1); return p});
+      }
+    }
+
+    document.onkeydown = (e) => {
+      let thisKey = KeyBoardMap.get(e.code);
+
+      if (!e.repeat && thisKey) {
+        setKeysPressing(p => {thisKey && p.push(thisKey); return p});
+        PlayNote(thisKey);
+      }
+    }
+
+  }, []);
+  
+
   return (
     <div className="relative w-full h-50">
       {/* Black keys */}
@@ -41,35 +111,35 @@ export function Piano(props: IPianoProps) {
       <div className="w-full h-half flex absolute z-10">
         <Note
           name="C# D♭"
-          id="Cs"
+          id="Db"
           black
           spacing="10"
           highlight={props.VisualModifier(2)}
         />
         <Note
           name="D# E♭"
-          id="Ds"
+          id="Eb"
           black
           spacing="7"
           highlight={props.VisualModifier(4)}
         />
         <Note
           name="F# G♭"
-          id="Fs"
+          id="Gb"
           black
           spacing="21"
           highlight={props.VisualModifier(7)}
         />
         <Note
           name="G# A♭"
-          id="Gs"
+          id="Ab"
           black
           spacing="7"
           highlight={props.VisualModifier(9)}
         />
         <Note
           name="A# B♭"
-          id="As"
+          id="Bb"
           black
           spacing="7"
           highlight={props.VisualModifier(11)}
@@ -96,7 +166,7 @@ const Formulas = {
   minor: [0, 2, 1, 2, 2, 1, 2, 2],
 };
 
-export type AvailableScales = "major" | "minor" & string;
+export type AvailableScales = "major" | ("minor" & string);
 
 export function GetScaleModifierFor(
   root_key_index: number = 1,

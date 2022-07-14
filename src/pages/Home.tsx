@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AvailableScales, GetScaleModifierFor, Piano } from "../components/Piano";
+import { AvailableScales, DefaultPianoNotes, GetScaleModifierFor, Piano } from "../components/Piano";
 
 function MainPiano() {
   let [currentKey, setCurrentKey] = useState(1);
@@ -33,7 +33,10 @@ function MainPiano() {
         </select>
       </div>
 
-      <Piano VisualModifier={GetScaleModifierFor(currentKey, currentScaleType)} />
+      <Piano
+        Notes={DefaultPianoNotes}
+        VisualModifier={GetScaleModifierFor(currentKey, currentScaleType)}
+      />
     </div>
   );
 }
