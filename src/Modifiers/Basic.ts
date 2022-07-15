@@ -137,7 +137,7 @@ export class Modifier {
   config: IModifierConfig = { key: 1, scale: "major" };
 
   PlayNote(note_id: string) {
-    new Audio("/notes/" + note_id + "3.mp3").play();
+    new Audio("/instruments/NPiano/" + note_id + ".wav").play();
     return true;
   }
 
