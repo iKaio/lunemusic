@@ -56,9 +56,8 @@ export function Keyboard(props: IKeyboardProps) {
   let BlackKeys: IKeyboardNote[] = [];
   let WhiteKeys: IKeyboardNote[] = [];
 
-  props.Modifier.keys_states.forEach((note, i) => {
-    note.index = i + 1;
-    note.available = props.Modifier.isKeyAvailable(i + 1);
+  props.Modifier.keys_states.forEach((note) => {
+    note.available = props.Modifier.isKeyAvailable(note.index);
 
     if (note.type == "black") {
       BlackKeys.push(note);
@@ -85,26 +84,28 @@ export function Keyboard(props: IKeyboardProps) {
         <select
           onInput={(e) => {
             props.Modifier.config.key = parseInt(e.currentTarget.value);
+            props.Modifier.updateAvailableNotes();
             update(Date.now());
           }}
         >
-          <option value="1">C</option>
-          <option value="2">C# D♭</option>
-          <option value="3">D</option>
-          <option value="4">D# E♭</option>
-          <option value="5">E</option>
-          <option value="6">F</option>
-          <option value="7">F# G♭</option>
-          <option value="8">G</option>
-          <option value="9">G# A♭</option>
-          <option value="10">A</option>
-          <option value="11">A# B♭</option>
-          <option value="12">B</option>
+          <option value="0">C</option>
+          <option value="1">C# D♭</option>
+          <option value="2">D</option>
+          <option value="3">D# E♭</option>
+          <option value="4">E</option>
+          <option value="5">F</option>
+          <option value="6">F# G♭</option>
+          <option value="7">G</option>
+          <option value="8">G# A♭</option>
+          <option value="9">A</option>
+          <option value="10">A# B♭</option>
+          <option value="11">B</option>
         </select>
 
         <select
           onInput={(e) => {
             props.Modifier.config.scale = e.currentTarget.value == "1" ? "major" : "minor";
+            props.Modifier.updateAvailableNotes();
             update(Date.now());
           }}
         >

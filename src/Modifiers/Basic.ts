@@ -4,6 +4,7 @@ export type AvailableScales = "major" | ("minor" & string);
 
 export interface IModifier {
   update?: React.Dispatch<React.SetStateAction<number>>;
+  updateAvailableNotes: ()=>void;
   isKeyAvailable: (key_index: number) => boolean;
   onKeyUp: (key_code: string) => any;
   onKeyDown: (key_code: string) => any;
@@ -11,6 +12,7 @@ export interface IModifier {
   config: IModifierConfig;
   keys_states: IKeyboardNote[];
   panel_indicators: string[];
+  available_notes_index: number[]
 }
 export type IModifierConfig = {
   key: number;
@@ -24,7 +26,7 @@ export const DefaultPianoNotes: IKeyboardNote[] = [
     preview: "C",
     spacing: "0",
     key: "KeyZ",
-    index: 1,
+    index: 0,
   },
   {
     name: "C# D♭",
@@ -32,7 +34,7 @@ export const DefaultPianoNotes: IKeyboardNote[] = [
     preview: "Db",
     spacing: "10",
     key: "KeyS",
-    index: 2,
+    index: 1,
   },
   {
     name: "D",
@@ -40,7 +42,7 @@ export const DefaultPianoNotes: IKeyboardNote[] = [
     preview: "D",
     spacing: "0",
     key: "KeyX",
-    index: 3,
+    index: 2,
   },
   {
     name: "D# E♭",
@@ -48,7 +50,7 @@ export const DefaultPianoNotes: IKeyboardNote[] = [
     preview: "Eb",
     spacing: "7",
     key: "KeyD",
-    index: 4,
+    index: 3,
   },
   {
     name: "E",
@@ -56,7 +58,7 @@ export const DefaultPianoNotes: IKeyboardNote[] = [
     preview: "E",
     spacing: "0",
     key: "KeyC",
-    index: 5,
+    index: 4,
   },
   {
     name: "F",
@@ -64,7 +66,7 @@ export const DefaultPianoNotes: IKeyboardNote[] = [
     preview: "F",
     spacing: "0",
     key: "KeyV",
-    index: 6,
+    index: 5,
   },
   {
     name: "F# G♭",
@@ -72,7 +74,7 @@ export const DefaultPianoNotes: IKeyboardNote[] = [
     preview: "Gb",
     spacing: "21",
     key: "KeyG",
-    index: 7,
+    index: 6,
   },
   {
     name: "G",
@@ -80,7 +82,7 @@ export const DefaultPianoNotes: IKeyboardNote[] = [
     preview: "G",
     spacing: "0",
     key: "KeyB",
-    index: 8,
+    index: 7,
   },
   {
     name: "G# A♭",
@@ -88,7 +90,7 @@ export const DefaultPianoNotes: IKeyboardNote[] = [
     preview: "Ab",
     spacing: "7",
     key: "KeyH",
-    index: 9,
+    index: 8,
   },
   {
     name: "A",
@@ -96,7 +98,7 @@ export const DefaultPianoNotes: IKeyboardNote[] = [
     preview: "A",
     spacing: "0",
     key: "KeyN",
-    index: 10,
+    index: 9,
   },
   {
     name: "A# B♭",
@@ -104,7 +106,7 @@ export const DefaultPianoNotes: IKeyboardNote[] = [
     preview: "Bb",
     spacing: "7",
     key: "KeyJ",
-    index: 11,
+    index: 10,
   },
   {
     name: "B",
@@ -112,7 +114,7 @@ export const DefaultPianoNotes: IKeyboardNote[] = [
     preview: "B",
     spacing: "0",
     key: "KeyM",
-    index: 12,
+    index: 11,
   },
 ];
 
@@ -122,29 +124,40 @@ const Formulas = {
 };
 
 const IntervalsSequences: { [key: string]: string } = {
-  "3,2": "$", // Major triad
-  "3,2,3": "$7", // Major seventh
-  "2,3": "$m", // Minor triad
-  "2,3,2": "$m7", // Minor seventh
+  "3,2": "1$", // Major triad
+  "3,2,3": "1$7", // Major seventh
+  "2,3": "1$m", // Minor triad
+  "2,3,2": "1$m7", // Minor seventh
+
+  "4,3": "2$ 2nd inversion",
+  "4,2": "2$m 2nd inversion",
+
+  "3,4": "3$m 1st inversion",
+
+  "2,5": "3$dim 1st inversion",
 };
 
 export class Modifier {
-  constructor() {}
+  constructor() {
+    this.updateAvailableNotes();
+  }
 
+  available_notes_index: number[] = [];
   panel_indicators: string[] = ["None"];
   keys_states: IKeyboardNote[] = [...DefaultPianoNotes];
   update: React.Dispatch<React.SetStateAction<number>> = () => {};
-  config: IModifierConfig = { key: 1, scale: "major" };
+  config: IModifierConfig = { key: 0, scale: "major" };
 
   PlayNote(note_id: string) {
-    new Audio("/instruments/NPiano/" + note_id + ".wav").play();
+    new Audio("https://raw.githubusercontent.com/iKaio/lunemusic/master/instruments/NPiano/" + note_id + ".wav").play();
     return true;
   }
 
-  isKeyAvailable(key_index: number) {
+  updateAvailableNotes() {
     let formula = Formulas[this.config.scale];
-
     let current = this.config.key;
+
+    this.available_notes_index = [];
 
     for (let i = 0; i < formula.length; i++) {
       const step_type = formula[i];
@@ -154,12 +167,12 @@ export class Modifier {
         current -= 12;
       }
 
-      if (current == key_index) {
-        return true;
-      }
+      this.available_notes_index.push(current);
     }
+  }
 
-    return false;
+  isKeyAvailable(key_index: number) {
+    return this.available_notes_index.findIndex(e=>e===key_index) != -1;
   }
 
   updateChordIndicator() {
@@ -179,10 +192,18 @@ export class Modifier {
     let display_template = IntervalsSequences[intervals_sign];
 
     if (display_template) {
-      this.panel_indicators[0] = display_template.replace(
-        "$",
-        pressing_keys[0].name
-      );
+      let vars = [
+        ["1$", pressing_keys[0].name],
+        ["2$", pressing_keys[1].name],
+        ["3$", pressing_keys[2].name],
+      ]
+      let formated = display_template;
+
+      vars.forEach(vari=>{
+        formated = formated.replace(vari[0], vari[1]);
+      });
+
+      this.panel_indicators[0] = formated;
     } else {
       this.panel_indicators[0] = "None";
     }
