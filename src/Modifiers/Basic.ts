@@ -241,8 +241,10 @@ export class Modifier {
   }
 
   test() {
-    console.log(this.available_notes_index);
-    console.log(MoveInArray(this.available_notes_index, 0, +13));
+    let test_arr = ["cat", "dog", "monke", "car"];
+
+    console.log(MoveInArray(test_arr, 2, -5))
+    console.log(MoveInArray(test_arr, 2, +7))
   }
 
   onReady() {
