@@ -1,18 +1,21 @@
 import { IKeyboardNote } from "../components/Keyboard";
+import MidiWriter, { Duration, Pitch } from "midi-writer-js";
+import { MoveInArray } from "../Utility";
 
 export type AvailableScales = "major" | ("minor" & string);
 
 export interface IModifier {
   update?: React.Dispatch<React.SetStateAction<number>>;
-  updateAvailableNotes: ()=>void;
+  updateAvailableNotes: () => void;
   isKeyAvailable: (key_index: number) => boolean;
   onKeyUp: (key_code: string) => any;
   onKeyDown: (key_code: string) => any;
   PlayNote: (note_id: string) => boolean;
+  onReady: () => void;
   config: IModifierConfig;
   keys_states: IKeyboardNote[];
   panel_indicators: string[];
-  available_notes_index: number[]
+  available_notes_index: number[];
 }
 export type IModifierConfig = {
   key: number;
@@ -140,6 +143,8 @@ const IntervalsSequences: { [key: string]: string } = {
 export class Modifier {
   constructor() {
     this.updateAvailableNotes();
+    this.test();
+    this.onReady();
   }
 
   available_notes_index: number[] = [];
@@ -149,7 +154,11 @@ export class Modifier {
   config: IModifierConfig = { key: 0, scale: "major" };
 
   PlayNote(note_id: string) {
-    new Audio("https://raw.githubusercontent.com/iKaio/lunemusic/master/instruments/NPiano/" + note_id + ".wav").play();
+    new Audio(
+      "https://raw.githubusercontent.com/iKaio/lunemusic/master/instruments/NPiano/" +
+        note_id +
+        ".wav"
+    ).play();
     return true;
   }
 
@@ -163,7 +172,7 @@ export class Modifier {
       const step_type = formula[i];
       current += step_type;
 
-      if (current > 12) {
+      if (current > 11) {
         current -= 12;
       }
 
@@ -172,7 +181,7 @@ export class Modifier {
   }
 
   isKeyAvailable(key_index: number) {
-    return this.available_notes_index.findIndex(e=>e===key_index) != -1;
+    return this.available_notes_index.findIndex((e) => e === key_index) != -1;
   }
 
   updateChordIndicator() {
@@ -196,10 +205,10 @@ export class Modifier {
         ["1$", pressing_keys[0].name],
         ["2$", pressing_keys[1].name],
         ["3$", pressing_keys[2].name],
-      ]
+      ];
       let formated = display_template;
 
-      vars.forEach(vari=>{
+      vars.forEach((vari) => {
         formated = formated.replace(vari[0], vari[1]);
       });
 
@@ -229,5 +238,30 @@ export class Modifier {
 
     this.updateChordIndicator();
     this.update(Date.now());
+  }
+
+  test() {
+    console.log(this.available_notes_index);
+    console.log(MoveInArray(this.available_notes_index, 0, +13));
+  }
+
+  onReady() {
+    const track = new MidiWriter.Track();
+    let next_note_a_index = 0;
+
+    for (let i = 0; i < 100; i++) {
+      track.addEvent(
+        new MidiWriter.NoteEvent({
+          pitch: [(this.keys_states[this.available_notes_index[next_note_a_index]].preview + "3") as Pitch],
+          duration: "4",
+        })
+      );
+
+      let off = Math.floor(Math.random() * 2);
+      next_note_a_index = MoveInArray(this.available_notes_index, next_note_a_index, off);
+    }
+
+    const write = new MidiWriter.Writer(track);
+    //window.open(write.dataUri());
   }
 }
