@@ -143,7 +143,6 @@ const IntervalsSequences: { [key: string]: string } = {
 export class Modifier {
   constructor() {
     this.updateAvailableNotes();
-    this.test();
     this.onReady();
   }
 
@@ -240,18 +239,11 @@ export class Modifier {
     this.update(Date.now());
   }
 
-  test() {
-    let test_arr = ["cat", "dog", "monke", "car"];
-
-    console.log(MoveInArray(test_arr, 2, -5))
-    console.log(MoveInArray(test_arr, 2, +7))
-  }
-
   onReady() {
     const track = new MidiWriter.Track();
     let next_note_a_index = 0;
 
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 10; i++) {
       track.addEvent(
         new MidiWriter.NoteEvent({
           pitch: [(this.keys_states[this.available_notes_index[next_note_a_index]].preview + "3") as Pitch],
@@ -259,8 +251,7 @@ export class Modifier {
         })
       );
 
-      let off = Math.floor(Math.random() * 2);
-      next_note_a_index = MoveInArray(this.available_notes_index, next_note_a_index, off);
+      next_note_a_index = MoveInArray(this.available_notes_index, next_note_a_index, +1);
     }
 
     const write = new MidiWriter.Writer(track);
