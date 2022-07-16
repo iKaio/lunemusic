@@ -72,21 +72,21 @@ hr {
     padding: .5rem;
 }
 
-select {
-    background: black;
-    color: white;
-    border: none;
-    margin-right: .3rem;
-    height: 5vh;
-}
-
 .pressing-key {
     background: palegreen;
 }
 
-.panel-indicator {
-    color: rgb(129, 255, 211);
+.panel-item {
     width: fit-content;
-    font-size: 1rem;
     margin: 0;
+    margin-right: .3rem;
+}
+
+.ab-style {
+    background: orange;
+    border: solid 2px black;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: .1rem;
 }

@@ -14,8 +14,8 @@ export interface IModifier {
   onReady: () => void;
   config: IModifierConfig;
   keys_states: IKeyboardNote[];
-  panel_indicators: string[];
   available_notes_index: number[];
+  panel_indicators: string[];
 }
 export type IModifierConfig = {
   key: number;
@@ -135,6 +135,7 @@ const IntervalsSequences: { [key: string]: string } = {
   "4,3": "2$ 2nd inversion",
   "4,2": "2$m 2nd inversion",
 
+  "2,4": "3$ 1st inversion",
   "3,4": "3$m 1st inversion",
 
   "2,5": "3$dim 1st inversion",
@@ -143,14 +144,13 @@ const IntervalsSequences: { [key: string]: string } = {
 export class Modifier {
   constructor() {
     this.updateAvailableNotes();
-    this.onReady();
   }
 
   available_notes_index: number[] = [];
-  panel_indicators: string[] = ["None"];
   keys_states: IKeyboardNote[] = [...DefaultPianoNotes];
   update: React.Dispatch<React.SetStateAction<number>> = () => {};
   config: IModifierConfig = { key: 0, scale: "major" };
+  panel_indicators: string[] = ["None"];
 
   PlayNote(note_id: string) {
     new Audio(
@@ -239,22 +239,29 @@ export class Modifier {
     this.update(Date.now());
   }
 
-  onReady() {
+  GenerateRandomTrack() {
     const track = new MidiWriter.Track();
     let next_note_a_index = 0;
 
     for (let i = 0; i < 100; i++) {
       track.addEvent(
         new MidiWriter.NoteEvent({
-          pitch: [(this.keys_states[this.available_notes_index[next_note_a_index]].preview + "3") as Pitch],
+          pitch: [
+            (this.keys_states[this.available_notes_index[next_note_a_index]]
+              .preview + "3") as Pitch,
+          ],
           duration: "4",
         })
       );
 
-      next_note_a_index = MoveInArray(this.available_notes_index, next_note_a_index, Math.floor(Math.random() * 4) - 2);
+      next_note_a_index = MoveInArray(
+        this.available_notes_index,
+        next_note_a_index,
+        Math.floor(Math.random() * 4) - 2
+      );
     }
 
     const write = new MidiWriter.Writer(track);
-    //window.open(write.dataUri());
+    write.saveMIDI("Random track in " + this.keys_states[this.config.key].name);
   }
 }

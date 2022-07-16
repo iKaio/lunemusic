@@ -11,7 +11,9 @@ function Note(props: IKeyboardNoteProps) {
 
   return (
     <div
-      onClick={() => props.Modifier.PlayNote(props.Note.preview || props.Note.name || "C")}
+      onClick={() =>
+        props.Modifier.PlayNote(props.Note.preview || props.Note.name || "C")
+      }
       className={`flex flex-col-reverse items-center h-full
 
         ${isBlack ? "black-key" : "white-key"}
@@ -82,6 +84,7 @@ export function Keyboard(props: IKeyboardProps) {
     <div className="main-piano">
       <div className="w-full main-piano-panel">
         <select
+          className="panel-item ab-style"
           onInput={(e) => {
             props.Modifier.config.key = parseInt(e.currentTarget.value);
             props.Modifier.updateAvailableNotes();
@@ -103,8 +106,10 @@ export function Keyboard(props: IKeyboardProps) {
         </select>
 
         <select
+          className="panel-item ab-style"
           onInput={(e) => {
-            props.Modifier.config.scale = e.currentTarget.value == "1" ? "major" : "minor";
+            props.Modifier.config.scale =
+              e.currentTarget.value == "1" ? "major" : "minor";
             props.Modifier.updateAvailableNotes();
             update(Date.now());
           }}
@@ -113,7 +118,9 @@ export function Keyboard(props: IKeyboardProps) {
           <option value="2">Minor</option>
         </select>
 
-        {props.Modifier.panel_indicators.map(indi=><h1 className="panel-indicator">{indi}</h1>)}
+        {props.Modifier.panel_indicators.map((indi) => (
+          <h1 className="panel-item ab-style">{indi}</h1>
+        ))}
       </div>
 
       <div className="relative w-full h-50">
