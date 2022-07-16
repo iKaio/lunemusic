@@ -7,31 +7,19 @@ export type IKeyboardNoteProps = {
 };
 
 function Note(props: IKeyboardNoteProps) {
-  let isBlack = props.Note.type == "black";
-
   return (
     <div
       onClick={() =>
         props.Modifier.PlayNote(props.Note.preview || props.Note.name || "C")
       }
-      className={`flex flex-col-reverse items-center h-full
-
-        ${isBlack ? "black-key" : "white-key"}
-        ${"key-spacing-" + props.Note.spacing}
-        ${props.Note.pressing ? "pressing-key" : ""}
-        `}
+      className={`
+        flex flex-col-reverse items-center
+        ${props.Note.style.default}
+        ${props.Note.available ? props.Note.style.highlighted : ""}
+        ${props.Note.pressing ? props.Note.style.pressing : ""}
+      `}
     >
-      <h1
-        className={`key-name ${
-          props.Note.available
-            ? isBlack
-              ? "black-key-name-highlight"
-              : "white-key-name-highlight"
-            : ""
-        }`}
-      >
-        {props.Note.name}
-      </h1>
+      <h1 className="key-name">{props.Note.name}</h1>
     </div>
   );
 }
@@ -40,7 +28,11 @@ export type IKeyboardNote = {
   name: string;
   type: "black" | "white";
   preview: string;
-  spacing: "0" | "7" | "10" | "14" | "21";
+  style: {
+    default: string;
+    highlighted: string;
+    pressing: string;
+  };
   key?: string;
   index: number;
   available?: boolean;

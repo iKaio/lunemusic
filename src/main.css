@@ -33,19 +33,41 @@ hr {
 
 .black-key {
     background: black;
-    width: 7.14%;
+    width: 3.57%;
+}
+
+.black-key-highlighted h1 {
+    color: white;
+    font-weight: bold;
+}
+
+.black-key-pressing {
+    background: rgb(85, 0, 160);
+    width: 3.57%;
 }
 
 .white-key {
     background: white;
-    width: 14.28%;
+    width: 7.14%;
     border: solid 1px rgba(0, 0, 0, .5);
 }
 
-.key-spacing-7 {margin-left: 7.14%}
-.key-spacing-10 {margin-left: 10.71%}
-.key-spacing-14 {margin-left: 14.28%}
-.key-spacing-21 {margin-left: 21.42%}
+.white-key-highlighted h1 {
+    color: black;
+    font-weight: bold;
+}
+
+.white-key-pressing {
+    background: rgb(150, 29, 255);
+    width: 7.14%;
+    border: solid 1px rgba(0, 0, 0, .5);
+}
+
+
+.key-spacing-6of4 {margin-left: 10.71%}
+.key-spacing-whole {margin-left: 7.14%}
+.key-spacing-3of4 {margin-left: 5.35%}
+.key-spacing-half {margin-left: 3.57%}
 
 .key-name {
     color: rgba(127.5,127.5,127.5,.5);
@@ -53,15 +75,8 @@ hr {
     text-align: center;
 }
 
-.black-key-name-highlight {
-    color: white;
-}
-.white-key-name-highlight {
-    color: black;
-}
-
 .main-piano {
-    width: 50%;
+    width: 100%;
 }
 
 .main-piano-panel {
@@ -70,10 +85,6 @@ hr {
     display: flex;
     align-items: center;
     padding: .5rem;
-}
-
-.pressing-key {
-    background: palegreen;
 }
 
 .panel-item {
