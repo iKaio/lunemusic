@@ -243,7 +243,7 @@ export class Modifier {
     const track = new MidiWriter.Track();
     let next_note_a_index = 0;
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 100; i++) {
       track.addEvent(
         new MidiWriter.NoteEvent({
           pitch: [(this.keys_states[this.available_notes_index[next_note_a_index]].preview + "3") as Pitch],
@@ -251,7 +251,7 @@ export class Modifier {
         })
       );
 
-      next_note_a_index = MoveInArray(this.available_notes_index, next_note_a_index, +1);
+      next_note_a_index = MoveInArray(this.available_notes_index, next_note_a_index, Math.floor(Math.random() * 4) - 2);
     }
 
     const write = new MidiWriter.Writer(track);
